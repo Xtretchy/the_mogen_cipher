@@ -1,30 +1,16 @@
 ### the encrpyt function
+    
 def encrypt(text):
-  enc_text = ''
-  for i in text:
-    if i.isupper():
-      i = i.lower()
-      enc_text += '!' + en_dic[i]
-    elif i in en_dic:
-      enc_text += en_dic[i]
-    else:
-      enc_text += ('=' + i)
-  enc_text += '0'
-  return enc_text
-
-### test_encrypted function; to check if text is 'Mogen' encrypted
-def test_encrypted(text):
-  if text[-1] != '0':
-    print("\nThis text doesn't seem 'Mogen' encrypted. Test may return \"FAILED\". Do you want to continue the decryption process anyway?")
-    confirmation = input('Y/N: ').lower()
-    if confirmation == 'y':
-      pass
-    elif confirmation == 'n':
-      input('\nDone. Press Enter to exit. ')
-      quit()
-    else:
-      input('\nInvalid input...\nPress Enter to exit. ')
-      quit()
+    enc_text = ''
+    for i in text:
+        if i in en_dic:     
+            if i.isupper():
+                i = i.lower(); enc_text += '!' + en_dic[i]
+            else: enc_text += en_dic[i]
+        else:
+            enc_text += ('=' + i)
+    enc_text += '0'
+    return enc_text
 
 ### the decrypt function
 def decrypt(text):
@@ -46,7 +32,21 @@ def decrypt(text):
     elif i == '=': exact = True; continue
     elif i in de_dic: dec_text += de_dic[i]
     else: error = True; dec_text += i
-  return dec_text
+  return dec_text, error
+
+### test_encrypted function; to check if text is 'Mogen' encrypted
+def test_encrypted(text):
+  if text[-1] != '0':
+    print("\nThis text doesn't seem 'Mogen' encrypted. Test may return \"FAILED\". Do you want to continue the decryption process anyway?")
+    confirmation = input('Y/N: ').lower()
+    if confirmation == 'y':
+      pass
+    elif confirmation == 'n':
+      input('\nDone. Press Enter to exit. ')
+      quit()
+    else:
+      input('\nInvalid input...\nPress Enter to exit. ')
+      quit()
 
 ### the encryption and decryption dictionaries
 en_dic = {
@@ -65,15 +65,15 @@ def test_1001(text, process):
   if process == 1:
     orig_text = text
     pro1_text = encrypt(text) # encrypt
-    pro2_text = decrypt(pro1_text) # decrypt
+    pro2_text, error = decrypt(pro1_text) # decrypt
   elif process == 0:
     orig_text = text
-    pro1_text = decrypt(text) # decrypt
+    pro1_text, error = decrypt(text) # decrypt
     pro2_text = encrypt(pro1_text) # encrypt
   elif process == 1001:
     orig_text = text
     pro1_text = encrypt(text) # encrypt
-    pro2_text = decrypt(pro1_text) # decrypt
+    pro2_text, error = decrypt(pro1_text) # decrypt
     print('\nEncrypted text:', pro1_text)
     print('Decrypted text:', pro2_text)
     print('\nLength of original text:', len(orig_text))
@@ -83,30 +83,22 @@ def test_1001(text, process):
     result = "=======Result: Test PASSED!======="
   else:
     result = "=======Result: Test FAILED!======="
-
   return result
 
 ### conclusion function
-def conc(text, result, pro_text):
+def conc(text, result, pro_text, error=False):
   file = open('pro_text.txt', 'w').write(pro_text)
   if error == True:
     print("\nFound one or more non-Mogen character(s) while decrypting, therefore decryted text might not be reliable.")
-
   print('\nLength of original text:', len(text))
   print('Length of processed text:', len(pro_text))
   print(result)
   print('\nA copy of processed text, pro_text.txt, has been saved to same directory of the cipher.')
   input('Done. Press Enter to exit. ')
 
-
 ### the main process
-print("Welcome to 'The Mogen Cipher'.")
-global error # the only global variable (used to check if errors occur during ciphing process)
-error = False
+text = input('Welcome to \'The Mogen Cipher\'.\nEnter a text here: ')
 process = None
-
-text = input('Enter a text here: ')
-
 while process != 1 and process != 0 and process != 1001:
   try:
     process = int(input("Press '1' to encrypt or '0' to decrypt: "))
@@ -121,10 +113,10 @@ if process == 1:
   conc(text, result, pro_text)
 elif process == 0:
   test_encrypted(text) # checks if text is 'Mogen' encrypted
-  pro_text = decrypt(text) # decrypt
+  pro_text, error = decrypt(text) # decrypt
   result = test_1001(text, process) # 1001 test process
   print('\nDecrypted text:', pro_text)
-  conc(text, result, pro_text)
+  conc(text, result, pro_text, error)
 else:
   print('\nYou have invoked a complete encryption and decryption test process...')
   result = test_1001(text, process) # 1001 test process
